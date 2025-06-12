@@ -55,56 +55,39 @@
             100% { transform: translateY(10px) rotateY(-4deg); }
         }
 
-        /* --- LA TARJETA DE CRISTAL REFINADA --- */
+        /* --- LA TARJETA DE CRISTAL DEFINITIVA --- */
         .glass-card {
-            position: relative; /* Clave para el pseudo-elemento de fondo */
             display: flex;
             align-items: center;
-            gap: 30px; /* Un poco menos de espacio */
+            gap: 30px;
             width: 680px;
             padding: 40px;
             
-            background: rgba(25, 25, 40, 0.65);
+            /* 
+              LA MAGIA ESTÁ AQUÍ: Fondo multicapa.
+              1. Un gradiente lineal sutil desde una esquina (el acento de color).
+              2. El color de fondo base, oscuro y semitransparente.
+            */
+            background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), transparent 60%), 
+                        rgba(25, 25, 40, 0.75);
+
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             
             border-radius: 20px;
-            /* El borde limpio y sutil que pedías */
             border: 1px solid rgba(255, 255, 255, 0.1);
             
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-            overflow: hidden; /* Muy importante para que los efectos internos no se salgan */
         }
 
-        /* --- ACENTO DE COLOR DIAGONAL (COMO EN TU IMAGEN) --- */
-        .glass-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(79, 70, 229, 0.5), rgba(236, 72, 153, 0.5));
-            /* Este clip-path crea la forma diagonal exacta de tu imagen */
-            clip-path: polygon(35% 0, 100% 0, 100% 100%, 65% 100%);
-            opacity: 0.5;
-            z-index: 1; /* Se queda detrás del contenido */
-        }
-        
         /* --- CONTENIDO DE LA TARJETA --- */
-        /* Hacemos que el contenido tenga un z-index mayor para estar sobre el gradiente */
-        .profile-picture, .profile-info {
-            position: relative;
-            z-index: 2;
-        }
-
         .profile-picture img {
             width: 150px;
             height: 150px;
             border-radius: 50%;
             object-fit: cover;
-            /* El nuevo "aura" en vez de un borde sólido */
-            box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.6);
+            /* Aura sutil que coincide con el acento de color */
+            box-shadow: 0 0 25px -5px rgba(236, 72, 153, 0.5);
         }
 
         .profile-info {
@@ -125,7 +108,7 @@
         .profile-info p {
             font-size: 1.25rem;
             font-weight: 500;
-            color: #ec4899; /* El color de acento */
+            color: #ec4899; /* Color de acento explícito */
             padding-bottom: 15px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
@@ -171,10 +154,6 @@
             }
             .profile-info { align-items: center; }
             .profile-info p { width: 100%; }
-            /* Ajustamos el clip-path para que se vea bien en móvil */
-            .glass-card::before {
-                clip-path: polygon(0% 40%, 100% 40%, 100% 100%, 0% 100%);
-            }
         }
     </style>
 </head>
@@ -204,7 +183,6 @@
     </div>
 
     <script>
-        // El script del fondo de partículas se mantiene igual, es perfecto.
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -259,7 +237,8 @@
                 let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
                 let directionX = (Math.random() * 0.4) - 0.2;
                 let directionY = (Math.random() * 0.4) - 0.2;
-                let color = 'rgba(190, 150, 255, 0.6)';
+                // Color de partícula sincronizado con el acento de la tarjeta
+                let color = 'rgba(236, 72, 153, 0.4)';
 
                 particlesArray.push(new Particle(x, y, directionX, directionY, size, color));
             }
@@ -271,9 +250,11 @@
                 for (let b = a; b < particlesArray.length; b++) {
                     let distance = ((particlesArray[a].x - particlesArray[b].x) * (particlesArray[a].x - particlesArray[b].x)) +
                         ((particlesArray[a].y - particlesArray[b].y) * (particlesArray[a].y - particlesArray[b].y));
-                    if (distance < (canvas.width / 8) * (canvas.height / 8)) {
+                    // Aumentamos la distancia de conexión para redes más densas
+                    if (distance < (canvas.width / 7) * (canvas.height / 7)) {
                         opacityValue = 1 - (distance / 25000);
-                        ctx.strokeStyle = `rgba(236, 72, 153, ${opacityValue * 0.5})`; // Línas con color de acento
+                        // Color de línea sincronizado
+                        ctx.strokeStyle = `rgba(236, 72, 153, ${opacityValue * 0.5})`;
                         ctx.lineWidth = 1;
                         ctx.beginPath();
                         ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
